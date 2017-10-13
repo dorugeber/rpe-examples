@@ -51,7 +51,7 @@ program cgrid_shallow_water
   dy%sbits = 23
 
 ! MODEL PARAMETER INITIALISATION
-  nstop=  20000 !number of timesteps
+  nstop=  5000 !number of timesteps
   nwrite=   100 !Sets frequency of output
   ndump=0
 ! CHOOSE BOUNDARY CONDITIONS: free-slip (0.) or no-slip (1.)?

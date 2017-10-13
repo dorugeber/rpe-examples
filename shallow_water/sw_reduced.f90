@@ -39,7 +39,7 @@ program cgrid_shallow_water
 
 
 ! MODEL PARAMETER INITIALISATION
-  nstop=  20000 !number of timesteps
+  nstop=  5000 !number of timesteps
   nwrite=   100 !Sets frequency of output
   ndump=0
 ! CHOOSE BOUNDARY CONDITIONS: free-slip (0.) or no-slip (1.)?
@@ -264,8 +264,8 @@ subroutine timeupdate(n,nx,ny,nt,u,du,v,dv,h,dh,slip,ndump,num,nwrite,dx,dy)
      if (ndump.ge.10000) write(num,'(I5)') ndump
      print *,num	
      call write_hdata_file(h,dh,nt,nx,ny,dx,dy,'./Output/h.standard.'//num)
-     call write_udata_file(u,du,nt,nx,ny,dx,dy,'./Output/u.standard.'//num)
-     call write_vdata_file(v,dv,nt,nx,ny,dx,dy,'./Output/v.standard.'//num)
+     ! call write_udata_file(u,du,nt,nx,ny,dx,dy,'./Output/u.standard.'//num)
+     ! call write_vdata_file(v,dv,nt,nx,ny,dx,dy,'./Output/v.standard.'//num)
   endif
 
 end subroutine timeupdate
@@ -418,13 +418,10 @@ subroutine write_hdata_file(tdata,tddata,nt,nx,ny,tdx,tdy,filename)
   dy= tdy
 
   print *,filename
-  open(unit=9,file=filename,status='unknown')
-
-  do j=1,ny-1
-     do i=1,nx-1
-        write(9,*) real(i-1)*dx,real(j-1)*dy,&
-             & data(i,j),ddata(i,j,1),ddata(i,j,2)
-     end do
+  open(unit=9, file=filename, status='replace', form='unformatted')
+  
+  do j = 1, ny-1
+    write(9) data(:, j)
   end do
 
   close(9)
