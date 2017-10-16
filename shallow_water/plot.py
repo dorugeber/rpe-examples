@@ -5,7 +5,7 @@ files = 50
 dimx = 100
 dimy = 100
 
-field = np.zeros((dimx, dimy), dtype=np.float32)
+field = np.zeros((dimx, dimy), dtype=np.float64)
 
 plt.ion()
 
@@ -14,16 +14,21 @@ ax = fig.add_subplot(111)
 
 for ifile in range(files):
     print(ifile+1)
-    curfile = np.fromfile("Output/h.noemulator." + str(ifile+1), dtype=np.float32)
+
+    f = open("Output/h.noemulator." + str(ifile+1), "rb")
 
     # format of each "record" is
     # n_bytes (int), col[0], col[0], col[1], col[2], ..., col[-2], col[-1], col[-1], n_bytes (int)
 
-    # sanity check
-    assert curfile.size == dimy*(dimx + 4)
+    f.seek(4)  # skip first integer
+    curfile = np.fromfile(f, dtype=np.float64)
 
+    # sanity check on file size
+    assert curfile.size == dimy*(dimx + 3) - 1
+
+    # fill in columns
     for ii in range(dimy):
-        field[:, ii] = curfile[ii*(dimx + 4) + 2 : (ii + 1)*(dimx + 4) - 2]
+        field[:, ii] = curfile[ii*(dimx + 3) + 1 : (ii + 1)*(dimx + 3) - 2]
 
     plt.imshow(field)
     plt.colorbar()

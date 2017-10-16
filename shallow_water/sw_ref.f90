@@ -387,22 +387,15 @@ subroutine write_hdata_file(tdata,tddata,nt,nx,ny,tdx,tdy,filename)
 
   integer nx,ny,nt
   REAL*8 :: tdata(0:nx,0:ny)
-  REAL*8 ::tddata(0:nx,0:ny,0:nt),tdx,tdy
+  REAL*8 :: tddata(0:nx,0:ny,0:nt),tdx,tdy
   character(len=*) filename
-  integer i,j
-  real :: data(0:nx,0:ny)
-  real ::ddata(0:nx,0:ny,0:nt),dx,dy
-
-  data = tdata
-  ddata = tddata
-  dx =tdx
-  dy= tdy
+  integer j
 
   print *,filename
   open(unit=9, file=filename, status='replace', form='unformatted')
   
   do j = 1, ny-1
-    write(9) data(:, j)
+    write(9) tdata(:, j)
   end do
 
   close(9)
