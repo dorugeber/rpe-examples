@@ -30,6 +30,7 @@ for ifile in range(files):
     for ii in range(dimy):
         field[:, ii] = curfile[ii*(dimx + 3) + 1 : (ii + 1)*(dimx + 3) - 2]
 
+    print("Height", np.sum(field))
     plt.imshow(field)
     plt.colorbar()
     # plt.clim(-1.0, 1.0)
