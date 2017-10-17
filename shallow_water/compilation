@@ -1,0 +1,4 @@
+gfortran -o sw_ref.out -O3 -march=native sw_ref.f90
+
+gfortran -c -O3 -march=native -I../../rpe/modules sw_reduced.f90
+gfortran -o sw_reduced.out -O3 -march=native sw_reduced.o -L../../rpe/lib -lrpe
