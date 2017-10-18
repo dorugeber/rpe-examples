@@ -1,5 +1,5 @@
 program cgrid_shallow_water
-  !Written by Peter Dueben (2014) but based on Fortran 77 code by David Marshall  
+  !Written by Peter Dueben (2014) but based on Fortran 77 code by David Marshall
   implicit none
 
   integer nx,ny,nt
@@ -28,7 +28,7 @@ program cgrid_shallow_water
   nstop=  20000 !number of timesteps
   nwrite=   100 !Sets frequency of output
   ndump=0
-! CHOOSE BOUNDARY CONDITIONS: free-slip (0.) or no-slip (1.)?  
+! CHOOSE BOUNDARY CONDITIONS: free-slip (0.) or no-slip (1.)?
   slip=1._8
   lrestart = .FALSE.
 
@@ -46,7 +46,7 @@ program cgrid_shallow_water
   do n=1,nstop
      !CALCULATE RHS OF EQUATIONS
      CALL rhs(n,nx,ny,nt,u,du,v,dv,h,dh,gp,rdx,rdy,au,taux,tauy,fu,fv,&
-          & lrestart,ab,dt,h0)  
+          & lrestart,ab,dt,h0)
      !UPDATE PROGNOSTIC QUANTITIES
      CALL timeupdate(n,nx,ny,nt,u,du,v,dv,h,dh,slip,ndump,num,nwrite,dx,dy)
   end do
@@ -57,11 +57,11 @@ end program cgrid_shallow_water
 
 
 subroutine rhs(n,nx,ny,nt,u,du,v,dv,h,dh,gp,rdx,rdy,au,taux,tauy,fu,fv,&
-          & lrestart,ab,dt,h0) 
+          & lrestart,ab,dt,h0)
 
   !THIS SUBROUTINE WILL CALCULATE THE RIGHT HAND SIDE OF THE SHALLOW WATER EQUATIONS
 
-  
+
 
   implicit none
 
@@ -83,11 +83,11 @@ subroutine rhs(n,nx,ny,nt,u,du,v,dv,h,dh,gp,rdx,rdy,au,taux,tauy,fu,fv,&
 !This is the grid:
 !!!!!!!!!!!!!!!!!!!!!!!!!!!
 !------------------------------------------------------------...
-!  h(1,ny-1)   u(2,ny-1)   h(2,ny-1)   u(3,ny-1)   h(3,ny-1)   u(4,ny-1)       ... u(nx-1,ny-1)   h(nx-1,ny-1)   
+!  h(1,ny-1)   u(2,ny-1)   h(2,ny-1)   u(3,ny-1)   h(3,ny-1)   u(4,ny-1)       ... u(nx-1,ny-1)   h(nx-1,ny-1)
 !
-!--v(1,ny-1)---------------v(1,ny-1)---------------v(1,ny-1)-...                                  v(nx-1,ny-1) 
+!--v(1,ny-1)---------------v(1,ny-1)---------------v(1,ny-1)-...                                  v(nx-1,ny-1)
 !
-!  h(1,ny-2)   u(2,ny-2)   h(2,ny-2)   u(3,ny-2)   h(3,ny-2)   u(4,ny-2)       ... u(nx-1,ny-2)   h(nx-1,ny-2)   
+!  h(1,ny-2)   u(2,ny-2)   h(2,ny-2)   u(3,ny-2)   h(3,ny-2)   u(4,ny-2)       ... u(nx-1,ny-2)   h(nx-1,ny-2)
 !.
 !.
 !.
@@ -97,10 +97,10 @@ subroutine rhs(n,nx,ny,nt,u,du,v,dv,h,dh,gp,rdx,rdy,au,taux,tauy,fu,fv,&
 !
 !--v(1,2))-----------v(2,2)------------v(3,2)--...                     v(nx-1,2)
 !
-!  h(1,1)   u(2,1)   h(2,1)   u(3,1)   h(3,1)   u(4,1) ... u(nx-1,1)   h(nx-1,1)  
+!  h(1,1)   u(2,1)   h(2,1)   u(3,1)   h(3,1)   u(4,1) ... u(nx-1,1)   h(nx-1,1)
 !------------------------------------------------------
 
-   
+
      r0 = .125
      r1 = 2.0
      r2 = 0.25
@@ -124,7 +124,7 @@ subroutine rhs(n,nx,ny,nt,u,du,v,dv,h,dh,gp,rdx,rdy,au,taux,tauy,fu,fv,&
         end do
      end do
 
-     ! calculate new time increments for prognostic variables 
+     ! calculate new time increments for prognostic variables
      do j=1,ny-1
         do i=2,nx-1
            du(i,j,3)=du(i,j,2)  !For Adams Bashforth
@@ -134,7 +134,7 @@ subroutine rhs(n,nx,ny,nt,u,du,v,dv,h,dh,gp,rdx,rdy,au,taux,tauy,fu,fv,&
                 & -(b(i,j)-b(i-1,j))*rdx + taux(j) !-dx b = dx (g*h+0.5(u^2+v^2))
         end do
      end do
-     
+
     do j=2,ny-1
         do i=1,nx-1
            dv(i,j,3)=dv(i,j,2)  !For Adams Bashforth
@@ -193,7 +193,7 @@ subroutine rhs(n,nx,ny,nt,u,du,v,dv,h,dh,gp,rdx,rdy,au,taux,tauy,fu,fv,&
 subroutine timeupdate(n,nx,ny,nt,u,du,v,dv,h,dh,slip,ndump,num,nwrite,dx,dy)
 
   !THIS SUBROUTINE WILL UPDATE THE PROGNOSTIC VARIABELS
-  
+
   implicit none
 
   INTEGER :: n,nx,ny,nt
@@ -202,13 +202,13 @@ subroutine timeupdate(n,nx,ny,nt,u,du,v,dv,h,dh,slip,ndump,num,nwrite,dx,dy)
   integer i,j,k
   character*5 num,crun
   REAL*8 :: slip,r1,r4
-  REAL*8 :: mean(3), meandiff(3), std(3) 
+  REAL*8 :: mean(3), meandiff(3), std(3)
   integer ndump,nwrite
   REAL*8 :: dx,dy
 
   r1 = 2.0
   r4 = 1.0
-    
+
   do j=1,ny-1
      do i=2,nx-1
         u(i,j)=u(i,j)+du(i,j,0)
@@ -219,13 +219,13 @@ subroutine timeupdate(n,nx,ny,nt,u,du,v,dv,h,dh,slip,ndump,num,nwrite,dx,dy)
         v(i,j)=v(i,j)+dv(i,j,0)
      end do
   end do
-  
+
   do j=1,ny-1
      do i=1,nx-1
         h(i,j)=h(i,j)+dh(i,j,0)
      end do
   end do
-  
+
   !FIX BOUNDARY CONDITIONS
   do j=1,ny-1
      v(0,j)=(r4-r1*slip)*v(1,j)
@@ -241,7 +241,7 @@ subroutine timeupdate(n,nx,ny,nt,u,du,v,dv,h,dh,slip,ndump,num,nwrite,dx,dy)
   end do
 
   !WRITE OUTPUT IF NECESSARY
-  if (mod(n,nwrite).eq.0) then 
+  if (mod(n,nwrite).eq.0) then
      ndump=ndump+1
      if (ndump.le.9) write(num,'(I1)') ndump
      if (ndump.ge.10.and.ndump.le.99) write(num,'(I2)') ndump
@@ -253,7 +253,7 @@ subroutine timeupdate(n,nx,ny,nt,u,du,v,dv,h,dh,slip,ndump,num,nwrite,dx,dy)
      call write_udata_file(u,du,nt,nx,ny,dx,dy,'./Output/u.noemulator.'//num)
      call write_vdata_file(v,dv,nt,nx,ny,dx,dy,'./Output/v.noemulator.'//num)
   endif
-  
+
 end subroutine timeupdate
 
 
@@ -264,7 +264,7 @@ subroutine initialise(nx,ny,nt,lrestart,au,h0,dt,f0,&
 
   !INTITIALISE MODEL FIELDS FOR THE SHALLOW WATER MODEL SETUP
 
-  
+
   implicit none
 
   INTEGER :: nx,ny,nt
@@ -284,7 +284,7 @@ subroutine initialise(nx,ny,nt,lrestart,au,h0,dt,f0,&
   pi=3.14159265358979
   x0=3480000.0
   y0=3480000.0
-  au=470.23   
+  au=470.23
   h0=500.
   dt=25.0
   f0=4.46e-5
@@ -316,7 +316,7 @@ subroutine initialise(nx,ny,nt,lrestart,au,h0,dt,f0,&
   do i=0,nx
      tauy(i)= 0.0
   end do
-  
+
   !Is this a restart simulation?
   IF(.not.lrestart)THEN
      do j=0,ny
@@ -340,11 +340,11 @@ subroutine initialise(nx,ny,nt,lrestart,au,h0,dt,f0,&
            dv(i,j,2)=0.
         end do
      end do
-  ELSE 
+  ELSE
      open(12,file='./initial/u.dat.'//TRIM(crun), STATUS='OLD', ACTION='read')
      open(13,file='./initial/v.dat.'//TRIM(crun), STATUS='OLD', ACTION='read')
      open(14,file='./initial/h.dat.'//TRIM(crun), STATUS='OLD', ACTION='read')
-     
+
      do j=1,ny-1
         do i=1,nx-1
            read(14,*) vec
@@ -352,7 +352,7 @@ subroutine initialise(nx,ny,nt,lrestart,au,h0,dt,f0,&
            dh(i,j,1:(nt-1)) = vec(4:)
         end do
      end do
-     
+
      do j=1,ny-1
         do i=1,nx
            read(12,*) vec
@@ -367,12 +367,12 @@ subroutine initialise(nx,ny,nt,lrestart,au,h0,dt,f0,&
            dv(i,j,1:(nt-1)) = vec(4:)
         end do
      end do
-     
+
      CLOSE(12)
      CLOSE(13)
-     CLOSE(14)  
+     CLOSE(14)
   END IF
-  
+
 end subroutine initialise
 
 
@@ -382,9 +382,9 @@ subroutine write_hdata_file(tdata,tddata,nt,nx,ny,tdx,tdy,filename)
 
 !    function: write data array to file
 
-  
+
   implicit none
-  
+
   integer nx,ny,nt
   REAL*8 :: tdata(0:nx,0:ny)
   REAL*8 ::tddata(0:nx,0:ny,0:nt),tdx,tdy
@@ -399,15 +399,15 @@ subroutine write_hdata_file(tdata,tddata,nt,nx,ny,tdx,tdy,filename)
   dy= tdy
 
   print *,filename
-  open(unit=9,file=filename,status='unknown')      
-  
+  open(unit=9,file=filename,status='unknown')
+
   do j=1,ny-1
      do i=1,nx-1
         write(9,*) real(i-1)*dx,real(j-1)*dy,&
              & data(i,j),ddata(i,j,1),ddata(i,j,2)
      end do
   end do
-  
+
   close(9)
 
   return
@@ -419,7 +419,7 @@ subroutine write_udata_file(tdata,tddata,nt,nx,ny,tdx,tdy,filename)
 
 !    function: write data array to file
 
-  
+
   implicit none
 
   integer nx,ny,nt
@@ -436,7 +436,7 @@ subroutine write_udata_file(tdata,tddata,nt,nx,ny,tdx,tdy,filename)
   dy= tdy
 
   print *,filename
-  open(unit=9,file=filename,status='unknown')      
+  open(unit=9,file=filename,status='unknown')
 
   do j=1,ny-1
      do i=1,nx
@@ -455,7 +455,7 @@ end subroutine write_udata_file
 subroutine write_vdata_file(tdata,tddata,nt,nx,ny,tdx,tdy,filename)
 
 !    function: write data array to file
-  
+
   implicit none
 
   integer nx,ny,nt
@@ -472,7 +472,7 @@ subroutine write_vdata_file(tdata,tddata,nt,nx,ny,tdx,tdy,filename)
   dy= tdy
 
   print *,filename
-  open(unit=9,file=filename,status='unknown')      
+  open(unit=9,file=filename,status='unknown')
 
   do j=1,ny
      do i=1,nx-1
